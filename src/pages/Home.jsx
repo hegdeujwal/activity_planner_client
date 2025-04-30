@@ -4,7 +4,9 @@ import axios from "axios";
 import AddActivityForm from "./AddActivityForm";
 import ActivityList from "../components/ActivityList";
 import FilterControls from "../components/FilterControls";
+
 const API_URL = import.meta.env.VITE_API_URL;
+
 function Home() {
   const [activities, setActivities] = useState([]);
   const [filters, setFilters] = useState({
@@ -15,7 +17,7 @@ function Home() {
 
   const fetchActivities = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/activities`); // Updated URL with /api
+      const response = await axios.get(`${API_URL}/api/activities`);
       setActivities(response.data);
     } catch (error) {
       console.error("Failed to fetch activities", error);
@@ -28,10 +30,7 @@ function Home() {
 
   const handleAddActivity = async (activity) => {
     try {
-      const response = await axios.post(
-        `${API_URL}/api/activities`, // Updated URL with /api
-        activity
-      );
+      const response = await axios.post(`${API_URL}/api/activities`, activity);
       setActivities([...activities, response.data]);
     } catch (error) {
       console.error("Failed to add activity", error);
@@ -40,7 +39,7 @@ function Home() {
 
   const handleDeleteActivity = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/activities/${id}`); // Updated URL with /api
+      await axios.delete(`${API_URL}/api/activities/${id}`);
       setActivities(activities.filter((activity) => activity.id !== id));
     } catch (error) {
       console.error("Failed to delete activity", error);
@@ -50,7 +49,7 @@ function Home() {
   const handleUpdateActivity = async (id, updatedData) => {
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/activities/${id}`, // Updated URL with /api
+        `${API_URL}/api/activities/${id}`,
         updatedData
       );
       setActivities(
@@ -73,7 +72,9 @@ function Home() {
       const matchPriority = filters.priority
         ? activity.priority.toLowerCase() === filters.priority.toLowerCase()
         : true;
-      const matchDate = filters.date ? activity.date === filters.date : true;
+      const matchDate = filters.date
+        ? new Date(activity.date).toISOString().split("T")[0] === filters.date
+        : true;
 
       return matchCategory && matchPriority && matchDate;
     })
